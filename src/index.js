@@ -6,7 +6,6 @@ import 'izitoast/dist/css/iziToast.min.css';
 import './styles.css';
 
 const loader = document.querySelector('.loader');
-const errorElement = document.querySelector('.error');
 const catInfoElement = document.querySelector('.cat-info');
 const breedSelectElement = document.querySelector('.breed-select');
 
@@ -15,12 +14,11 @@ fetchBreeds('breeds')
     const options = makeOptionsForSelect(data);
     createSelect(options);
   })
-  .catch(error => {
-    errorElement.classList.remove('hide');
+  .catch(() => {
     iziToast.show({
       position: 'topRight',
       messageColor: '#fff',
-      message: error.message,
+      message: 'Oops! Something went wrong! Try reloading the page!',
       color: '#ef5350',
     });
   })
@@ -54,7 +52,6 @@ function createSelect(options) {
     events: {
       afterChange: newVal => {
         breedSelect.disable();
-        errorElement.classList.add('hide');
         catInfoElement.classList.add('hide');
         loader.classList.remove('hide');
         fetchCatByBreed(newVal[0].value)
@@ -62,12 +59,12 @@ function createSelect(options) {
             catInfoElement.classList.remove('hide');
             makeFullInfoTemplate(data);
           })
-          .catch(error => {
-            errorElement.classList.remove('hide');
+          .catch(() => {
+            console.log(13);
             iziToast.show({
               position: 'topRight',
               messageColor: '#fff',
-              message: error.message,
+              message: 'Oops! Something went wrong! Try reloading the page!',
               color: '#ef5350',
             });
           })
@@ -81,8 +78,17 @@ function createSelect(options) {
 }
 
 function makeFullInfoTemplate(data) {
-  if (!data[0].breeds[0]) {
-    errorElement.classList.remove('hide');
+  console.log(15, data);
+  if (!data.length || !data[0] || !data[0].breeds || !data[0].breeds[0]) {
+    catInfoElement.classList.add('hide');
+    console.log(1);
+    iziToast.show({
+      position: 'topRight',
+      messageColor: '#fff',
+      message: 'Oops! Something went wrong! Try reloading the page!',
+      color: '#ef5350',
+    });
+    return;
   }
 
   const catInfo = data[0].breeds[0];
